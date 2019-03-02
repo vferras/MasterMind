@@ -1,0 +1,15 @@
+version: "3.6"
+
+services:
+  api:
+    image: api:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: ${API}Dockerfile
+      args:
+        main: ${API}
+        test: ${TEST}
+    ports:
+      - 8080:80
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
