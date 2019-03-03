@@ -134,7 +134,7 @@ namespace Lp.Payments.EndToEndTest
             stateResult.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        public enum BoardState
+        private enum BoardState
         {
             Initialized,
             Discovered,

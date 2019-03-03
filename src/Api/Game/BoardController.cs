@@ -44,7 +44,7 @@ namespace Api.Game
         [HttpGet("board/historic")]
         public IActionResult GetHistoric()
         {
-            return Ok(Board.GetGameHistoric());
+            return Ok(GameHistoric.GetGameHistoric());
         }
 
         [HttpGet("board/state")]

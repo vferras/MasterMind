@@ -9,6 +9,7 @@ using System.Linq;
 
 namespace UnitTest
 {
+    [Collection("UnitTest")]
     public class BoardShould
     {
         [Fact]
@@ -33,7 +34,7 @@ namespace UnitTest
 
             GetRandomCombination(3).ForEach(combination => Board.CheckPattern(combination));
 
-            var historic = Board.GetGameHistoric();
+            var historic = GameHistoric.GetGameHistoric();
             historic.Should().HaveCount(3);
         }
 
@@ -53,7 +54,7 @@ namespace UnitTest
                 checkResult.colour.Should().Be(0);
             });
 
-            var historic = Board.GetGameHistoric();
+            var historic = GameHistoric.GetGameHistoric();
             historic.Should().HaveCount(1);
         }
 
@@ -100,7 +101,7 @@ namespace UnitTest
             Board.Finish();
 
             Board.State.Should().Be(BoardState.FinishedByUser);
-            Board.GetGameHistoric().Count().Should().Be(1);
+            GameHistoric.GetGameHistoric().Count().Should().Be(1);
         }
 
         private static List<List<Colour>> GetRandomCombination(int size)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Api.Game.ValueObjects;
 
-namespace Api.Game.ValueObjects
+namespace Api.Game.Aggregates
 {
     public class GameHistoric
     {

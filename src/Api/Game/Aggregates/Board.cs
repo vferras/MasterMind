@@ -50,12 +50,9 @@ namespace Api.Game.Aggregates
             return (colour.Count, positionAndColour.Count, true);
         }
 
-        public static IEnumerable<List<Colour>> GetGameHistoric() => GameHistoric.GetGameHistoric();
-
         public static void Finish()
         {
             State = BoardState.FinishedByUser;
-
         }
 
         private static void CheckIfGameIsFinished(int positionAndColour)
