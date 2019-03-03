@@ -1,40 +1,35 @@
 using System;
-using Api.Board.ValueObjects;
+using System.Collections.Generic;
 
 namespace Api.Board.ValueObjects
 {
     public class Pattern
     {
-        private static Colour[] MasterPattern { get; set; }
+        private static List<Colour> _masterPattern;
 
-        public static void GenerateCombination(Colour[] colours = null)
+        public static void GenerateCombination(List<Colour> colours = null)
         {
             colours = colours ?? RandomPatternCombination();
-            InitializePattern();
 
-            if (colours.Length != Constants.ROW_SIZE) throw new ArgumentException();
-            Array.Copy(colours, MasterPattern, Constants.ROW_SIZE);
+            if (colours.Count != Constants.RowSize) throw new ArgumentException();
+            _masterPattern = new List<Colour>(colours);
         }
 
-        private static Colour[] RandomPatternCombination()
+        private static List<Colour> RandomPatternCombination()
         {
-            Colour[] pattern = new Colour[4];
-            InitializePattern();
+            var pattern = new List<Colour>();
 
-            for (var i = 0; i < Constants.ROW_SIZE; i++)
+            for (var i = 0; i < Constants.RowSize; i++)
             {
-                pattern[i] = GetRandomColour();
+                pattern.Add(GetRandomColour());
             }
 
             return pattern;
         }
 
-        public static Colour[] GetPattern() => MasterPattern;
+        public static List<Colour> GetPattern() => _masterPattern;
 
         private static Colour GetRandomColour() =>
-            (Colour)Enum.GetValues(typeof(Colour)).GetValue(new Random().Next(1, Constants.ROW_SIZE));
-
-        private static void InitializePattern() =>
-            MasterPattern = new Colour[Constants.ROW_SIZE];
+            (Colour)Enum.GetValues(typeof(Colour)).GetValue(new Random().Next(1, Constants.RowSize));
     }
 }

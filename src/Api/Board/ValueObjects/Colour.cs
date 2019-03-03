@@ -2,11 +2,11 @@ namespace Api.Board.ValueObjects
 {
     public enum Colour
     {
-        RED,
-        BLUE,
-        GREEN,
-        PURPLE,
-        YELLOW,
-        WHITE
+        Red,
+        Blue,
+        Green,
+        Purple,
+        Yellow,
+        White
     }
 }

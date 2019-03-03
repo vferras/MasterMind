@@ -1,17 +1,15 @@
-using System;
 using System.Collections.Generic;
-using Api.Board.ValueObjects;
 
-namespace UnitTest
+namespace Api.Board.ValueObjects
 {
     public class GameHistoric
     {
-        private static List<Colour[]> Historic { get; set; }
+        private static List<List<Colour>> Historic { get; set; }
 
-        public static void Reset() => Historic = new List<Colour[]>();
+        public static void Reset() => Historic = new List<List<Colour>>();
 
-        public static void AddCombinationChecked(Colour[] colours) => Historic.Add(colours);
+        public static void AddCombinationChecked(List<Colour> colours) => Historic.Add(colours);
 
-        public static List<Colour[]> GetGameHistoric() => Historic;
+        public static List<List<Colour>> GetGameHistoric() => Historic;
     }
 }

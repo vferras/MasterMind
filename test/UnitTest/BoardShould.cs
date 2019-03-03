@@ -5,7 +5,6 @@ using Api.Board.ValueObjects;
 using Api;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace UnitTest
 {
@@ -14,14 +13,14 @@ namespace UnitTest
         [Fact]
         public void InitializeTheBoard()
         {
-            BoardAggregate.Initialize(new Colour[] { Colour.RED, Colour.GREEN, Colour.BLUE, Colour.WHITE });
-            BoardAggregate.State.Should().Be(BoardState.INITIALIZED);
+            Board.Initialize(new List<Colour> { Colour.Red, Colour.Green, Colour.Blue, Colour.White });
+            Board.State.Should().Be(BoardState.Initialized);
 
-            Pattern.GetPattern().Length.Should().Be(4);
-            Pattern.GetPattern()[0].Should().Be(Colour.RED);
-            Pattern.GetPattern()[1].Should().Be(Colour.GREEN);
-            Pattern.GetPattern()[2].Should().Be(Colour.BLUE);
-            Pattern.GetPattern()[3].Should().Be(Colour.WHITE);
+            Pattern.GetPattern().Count.Should().Be(4);
+            Pattern.GetPattern()[0].Should().Be(Colour.Red);
+            Pattern.GetPattern()[1].Should().Be(Colour.Green);
+            Pattern.GetPattern()[2].Should().Be(Colour.Blue);
+            Pattern.GetPattern()[3].Should().Be(Colour.White);
 
             GameHistoric.GetGameHistoric().Count.Should().Be(0);
         }
@@ -29,72 +28,79 @@ namespace UnitTest
         [Fact]
         public void Return_GameHistoric_When_SomeRowAreFilled()
         {
-            BoardAggregate.Initialize();
+            Board.Initialize();
 
-            GetRandomCombination(3).ForEach(combination => BoardAggregate.CheckCombination(combination));
+            GetRandomCombination(3).ForEach(combination => Board.CheckCombination(combination));
 
-            var historic = BoardAggregate.GetGameHistoric();
+            var historic = Board.GetGameHistoric();
             historic.Should().HaveCount(3);
         }
 
         [Fact]
-        public void Return_GameHistoric_State_Is_Initialized()
+        public void Return_GameHistoric_Before_TheGameFinished()
         {
-            var pattern = new Colour[] { Colour.PURPLE, Colour.PURPLE, Colour.GREEN, Colour.BLUE };
+            var pattern = new List<Colour> { Colour.Purple, Colour.Purple, Colour.Green, Colour.Blue };
 
-            BoardAggregate.Initialize(pattern);
+            Board.Initialize(pattern);
 
-            BoardAggregate.CheckCombination(pattern);
-            GetRandomCombination(3).ForEach(combination => BoardAggregate.CheckCombination(combination));
+            Board.CheckCombination(pattern);
+            GetRandomCombination(3).ForEach(combination =>
+            {
+                var checkResult = Board.CheckCombination(combination);
+                checkResult.result.Should().BeFalse();
+                checkResult.positionAndColour.Should().Be(0);
+                checkResult.colour.Should().Be(0);
+            });
 
-            var historic = BoardAggregate.GetGameHistoric();
+            var historic = Board.GetGameHistoric();
             historic.Should().HaveCount(1);
         }
 
         [Theory]
-        [InlineData(new Colour[] { Colour.BLUE, Colour.GREEN, Colour.PURPLE, Colour.PURPLE }, 1, 1, BoardState.INITIALIZED)]
-        [InlineData(new Colour[] { Colour.RED, Colour.GREEN, Colour.PURPLE, Colour.PURPLE }, 2, 0, BoardState.INITIALIZED)]
-        [InlineData(new Colour[] { Colour.RED, Colour.GREEN, Colour.RED, Colour.BLUE }, 4, 0, BoardState.DISCOVERED)]
-        public void Return_Feedback_GivenACombination(Colour[] colours, int positionAndColour, int colour, BoardState state)
+        [InlineData(Colour.Blue, Colour.Green, Colour.Purple, Colour.Purple, 1, 1, BoardState.Initialized)]
+        [InlineData(Colour.Red, Colour.Green, Colour.Purple, Colour.Purple, 2, 0, BoardState.Initialized)]
+        [InlineData(Colour.Red, Colour.Green, Colour.Red, Colour.Blue, 4, 0, BoardState.Discovered)]
+        public void Return_Feedback_GivenACombination(Colour colour1, Colour colour2, Colour colour3, Colour colour4, int positionAndColour, int colour, BoardState state)
         {
-            BoardAggregate.Initialize(colours);
+            var colours = new List<Colour> { colour1, colour2, colour3, colour4 };
+            Board.Initialize(colours);
 
-            var result = BoardAggregate.CheckCombination
+            var result = Board.CheckCombination
             (
-                new Colour[] { Colour.RED, Colour.GREEN, Colour.RED, Colour.BLUE }
+                new List<Colour> { Colour.Red, Colour.Green, Colour.Red, Colour.Blue }
             );
 
             result.colour.Should().Be(colour);
             result.positionAndColour.Should().Be(positionAndColour);
-            BoardAggregate.State.Should().Be(state);
+            Board.State.Should().Be(state);
         }
 
         [Fact]
         public void Return_GameOver_When_AllBoardRowsAreFull()
         {
-            BoardAggregate.Initialize();
+            Board.Initialize();
 
-            var combination = new Colour[] { Colour.PURPLE, Colour.PURPLE, Colour.GREEN, Colour.BLUE };
+            var combination = new List<Colour> { Colour.Purple, Colour.Purple, Colour.Green, Colour.Blue };
 
-            for (var i = 1; i <= Constants.BOARD_SIZE; i++)
+            for (var i = 1; i <= Constants.BoardSize; i++)
             {
-                BoardAggregate.State.Should().Be(BoardState.INITIALIZED);
-                BoardAggregate.CheckCombination(combination);
+                Board.State.Should().Be(BoardState.Initialized);
+                Board.CheckCombination(combination);
             }
 
-            BoardAggregate.State.Should().Be(BoardState.GAMEOVER);
+            Board.State.Should().Be(BoardState.GameOver);
         }
 
-        private List<Colour[]> GetRandomCombination(int size)
+        private static List<List<Colour>> GetRandomCombination(int size)
         {
-            var colourList = new List<Colour[]>();
+            var colourList = new List<List<Colour>>();
 
             for (var i = 1; i <= size; i++)
             {
-                var colours = new Colour[4];
+                var colours = new List<Colour>();
                 for (var x = 0; x < 4; x++)
                 {
-                    colours[x] = (Colour)Enum.GetValues(typeof(Colour)).GetValue(new Random().Next(1, Constants.ROW_SIZE));
+                    colours.Add((Colour)Enum.GetValues(typeof(Colour)).GetValue(new Random().Next(1, Constants.RowSize)));
                 }
                 colourList.Add(colours);
             }
