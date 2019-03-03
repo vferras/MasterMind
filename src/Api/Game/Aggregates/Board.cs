@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Api.Board.ValueObjects;
+using Api.Game.ValueObjects;
 
-namespace Api.Board.Aggregates
+namespace Api.Game.Aggregates
 {
     public class Board
     {
@@ -15,7 +16,7 @@ namespace Api.Board.Aggregates
             State = BoardState.Initialized;
         }
 
-        public static (int colour, int positionAndColour, bool result) CheckCombination(List<Colour> checkedColours)
+        public static (int colour, int positionAndColour, bool result) CheckPattern(List<Colour> checkedColours)
         {
             var pattern = Pattern.GetPattern().ToList();
             var foreachPosition = 0;
@@ -23,7 +24,7 @@ namespace Api.Board.Aggregates
 
             if (State != BoardState.Initialized) return (0, 0, false);
 
-            foreach (var checkedColour in checkedColours)
+            checkedColours.ForEach(checkedColour =>
             {
                 if (checkedColour == pattern[foreachPosition])
                 {
@@ -40,7 +41,7 @@ namespace Api.Board.Aggregates
                 }
 
                 foreachPosition++;
-            }
+            });
 
             GameHistoric.AddCombinationChecked(checkedColours);
 
@@ -51,10 +52,17 @@ namespace Api.Board.Aggregates
 
         public static IEnumerable<List<Colour>> GetGameHistoric() => GameHistoric.GetGameHistoric();
 
+        public static void Finish()
+        {
+            State = BoardState.FinishedByUser;
+
+        }
+
         private static void CheckIfGameIsFinished(int positionAndColour)
         {
             State = positionAndColour == Constants.RowSize ? BoardState.Discovered
                 : GameHistoric.GetGameHistoric().Count == Constants.BoardSize ? BoardState.GameOver : BoardState.Initialized;
         }
+
     }
 }

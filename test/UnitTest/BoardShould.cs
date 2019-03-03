@@ -1,17 +1,18 @@
 using Xunit;
 using FluentAssertions;
-using Api.Board.Aggregates;
-using Api.Board.ValueObjects;
+using Api.Game.Aggregates;
+using Api.Game.ValueObjects;
 using Api;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UnitTest
 {
     public class BoardShould
     {
         [Fact]
-        public void InitializeTheBoard()
+        public void Initialize_TheBoard()
         {
             Board.Initialize(new List<Colour> { Colour.Red, Colour.Green, Colour.Blue, Colour.White });
             Board.State.Should().Be(BoardState.Initialized);
@@ -30,7 +31,7 @@ namespace UnitTest
         {
             Board.Initialize();
 
-            GetRandomCombination(3).ForEach(combination => Board.CheckCombination(combination));
+            GetRandomCombination(3).ForEach(combination => Board.CheckPattern(combination));
 
             var historic = Board.GetGameHistoric();
             historic.Should().HaveCount(3);
@@ -43,10 +44,10 @@ namespace UnitTest
 
             Board.Initialize(pattern);
 
-            Board.CheckCombination(pattern);
+            Board.CheckPattern(pattern);
             GetRandomCombination(3).ForEach(combination =>
             {
-                var checkResult = Board.CheckCombination(combination);
+                var checkResult = Board.CheckPattern(combination);
                 checkResult.result.Should().BeFalse();
                 checkResult.positionAndColour.Should().Be(0);
                 checkResult.colour.Should().Be(0);
@@ -65,7 +66,7 @@ namespace UnitTest
             var colours = new List<Colour> { colour1, colour2, colour3, colour4 };
             Board.Initialize(colours);
 
-            var result = Board.CheckCombination
+            var result = Board.CheckPattern
             (
                 new List<Colour> { Colour.Red, Colour.Green, Colour.Red, Colour.Blue }
             );
@@ -80,15 +81,26 @@ namespace UnitTest
         {
             Board.Initialize();
 
-            var combination = new List<Colour> { Colour.Purple, Colour.Purple, Colour.Green, Colour.Blue };
-
-            for (var i = 1; i <= Constants.BoardSize; i++)
+            GetRandomCombination(12).ForEach(combination =>
             {
                 Board.State.Should().Be(BoardState.Initialized);
-                Board.CheckCombination(combination);
-            }
+                Board.CheckPattern(combination);
+            });
 
             Board.State.Should().Be(BoardState.GameOver);
+        }
+
+        [Fact]
+        public void Finish_TheBoard()
+        {
+            Board.Initialize();
+
+            Board.CheckPattern(GetRandomCombination(1).Single());
+
+            Board.Finish();
+
+            Board.State.Should().Be(BoardState.FinishedByUser);
+            Board.GetGameHistoric().Count().Should().Be(1);
         }
 
         private static List<List<Colour>> GetRandomCombination(int size)
@@ -100,11 +112,17 @@ namespace UnitTest
                 var colours = new List<Colour>();
                 for (var x = 0; x < 4; x++)
                 {
-                    colours.Add((Colour)Enum.GetValues(typeof(Colour)).GetValue(new Random().Next(1, Constants.RowSize)));
+                    var colour = (Colour)Enum.GetValues(typeof(Colour)).GetValue(new Random().Next(1, Constants.RowSize));
+                    if (colour == Pattern.GetPattern()[x])
+                    {
+                        x--;
+                        continue;
+                    }
+                    colours.Add(colour);
                 }
+
                 colourList.Add(colours);
             }
-            colourList.Remove(Pattern.GetPattern());
 
             return colourList;
         }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Api.Board.ValueObjects
+namespace Api.Game.ValueObjects
 {
     public class Pattern
     {

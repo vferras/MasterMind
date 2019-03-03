@@ -1,4 +1,4 @@
-namespace Api.Board.ValueObjects
+namespace Api.Game.ValueObjects
 {
     public enum Colour
     {

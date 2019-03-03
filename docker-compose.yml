@@ -13,3 +13,12 @@ services:
       - 8080:80
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+  end-to-end-test:
+    image: endtoendtests
+    build:
+      context: .
+      dockerfile: ${END_TO_END_TESTS}Dockerfile
+      args:
+        main: ${END_TO_END_TESTS}
+    environment:
+      IT_TESTS_ENVIRONMENT: "true"
