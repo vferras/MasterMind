@@ -1,4 +1,4 @@
 language: bash
 
 script:
-    - build.sh
+    - ./build.sh
