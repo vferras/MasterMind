@@ -1,4 +1,6 @@
 
+[![Build Status](https://travis-ci.com/vferras/MasterMind.svg?branch=master)](https://travis-ci.com/vferras/MasterMind)
+
 # MasterMind
 
   
