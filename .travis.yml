@@ -1,5 +1,7 @@
 language: bash
 
+services: docker
+
 env:
   - DOCKER_COMPOSE_VERSION=3.7
 
